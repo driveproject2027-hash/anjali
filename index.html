@@ -54,18 +54,39 @@
   .btn svg{transition:transform .25s ease}
   .btn:hover svg{transform:translateX(3px)}
 
-  .leave .card{animation:fadeOut .55s ease forwards}
+  .fadeOut{animation:fadeOut .45s ease forwards}
   @keyframes fadeOut{to{opacity:0;transform:translateY(-10px) scale(.98)}}
   .veil{
     position:fixed;inset:0;background:var(--ink);opacity:0;pointer-events:none;
-    transition:opacity .6s ease;
+    transition:opacity .7s ease;
   }
   .leave .veil{opacity:1}
+
+  .count{
+    position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;
+  }
+  .count.active{display:flex}
+  .count-num{
+    font-family:'Playfair Display',serif;font-style:italic;font-weight:600;color:var(--cream);
+    font-size:86px;line-height:1;
+  }
+  .count-word{
+    font-family:'Inter',sans-serif;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+    color:rgba(250,249,245,.5);font-size:11px;margin-top:14px;
+  }
+  .count-num.pop{animation:pop .78s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes pop{
+    0%{opacity:0;transform:scale(.4)}
+    55%{opacity:1;transform:scale(1.08)}
+    100%{opacity:1;transform:scale(1)}
+  }
+  .count-num.fade{animation:numFade .3s ease forwards}
+  @keyframes numFade{to{opacity:0;transform:scale(.85)}}
 </style>
 </head>
 <body>
 <div class="wrap" id="wrap">
-  <div class="card">
+  <div class="card" id="card">
     <svg class="spark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 2L13.8 9.2L21 11L13.8 12.8L12 20L10.2 12.8L3 11L10.2 9.2L12 2Z" fill="#D97757"/>
     </svg>
@@ -77,14 +98,45 @@
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
   </div>
+  <div class="count" id="count">
+    <div class="count-num pop" id="countNum">3</div>
+    <div class="count-word">getting it ready</div>
+  </div>
   <div class="veil"></div>
 </div>
 <script>
+const card = document.getElementById('card');
+const countEl = document.getElementById('count');
+const numEl = document.getElementById('countNum');
+const wrap = document.getElementById('wrap');
+const sequence = ['3', '2', '1', '✨'];
+
 document.getElementById('openBtn').addEventListener('click', () => {
-  const wrap = document.getElementById('wrap');
-  wrap.classList.add('leave');
-  setTimeout(() => { window.location.href = 'flipbook.html'; }, 650);
+  card.classList.add('fadeOut');
+  setTimeout(() => {
+    card.style.display = 'none';
+    countEl.classList.add('active');
+    runCountdown(0);
+  }, 420);
 });
+
+function runCountdown(i){
+  numEl.textContent = sequence[i];
+  numEl.classList.remove('pop');
+  void numEl.offsetWidth;
+  numEl.classList.add('pop');
+  if (i < sequence.length - 1){
+    setTimeout(() => {
+      numEl.classList.add('fade');
+      setTimeout(() => { numEl.classList.remove('fade'); runCountdown(i + 1); }, 280);
+    }, 560);
+  } else {
+    setTimeout(() => {
+      wrap.classList.add('leave');
+      setTimeout(() => { window.location.href = 'flipbook.html'; }, 680);
+    }, 650);
+  }
+}
 </script>
 </body>
 </html>
